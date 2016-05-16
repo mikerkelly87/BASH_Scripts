@@ -81,16 +81,26 @@ echo " "
 
 #Create the first VM
 echo "Creating first VM..."
-virt-install --name "$VM1_NAME" --memory 1024 --vcpus 1 --import --disk "$IMAGE_PATH""$NEW_IMAGE_1" --noautoconsole
+virt-install --name "$VM1_NAME" --memory 512 --vcpus 1 --import --disk "$IMAGE_PATH""$NEW_IMAGE_1" --noautoconsole
 echo " "
 
 #Create the second VM
 echo "Creating second VM..."
-virt-install --name "$VM2_NAME" --memory 1024 --vcpus 1 --import --disk "$IMAGE_PATH""$NEW_IMAGE_2" --noautoconsole
+virt-install --name "$VM2_NAME" --memory 512 --vcpus 1 --import --disk "$IMAGE_PATH""$NEW_IMAGE_2" --noautoconsole
+echo " "
+
+#Add extra network adapter on first VM
+echo "Adding Second Interface to First VM"
+virsh attach-interface --domain "$VM1_NAME" --type network --source default --persistent
+echo " "
+
+#Add extra network adapter on second VM
+echo "Adding Second Interface to Second VM"
+virsh attach-interface --domain "$VM2_NAME" --type network --source default --persistent
 echo " "
 
 #Let the user know the creation has finished
 echo "Virtual Machines Created"
-echo "Root password for both machines is password"
+echo "Root password for both machines is S3cur3"
 
 #Author Mike Kelly 2016
