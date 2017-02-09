@@ -101,6 +101,6 @@ echo " "
 
 #Let the user know the creation has finished
 echo "Virtual Machines Created"
-echo "Root password for both machines is S3cur3"
+echo "Root password for both machines is password"
 
 #Author Mike Kelly 2016
