@@ -65,7 +65,7 @@ fi
 # Check to see if Disk Files exist
 echo "Checking to see if disk images already exist..."
 echo " "
-ls "$IMAGE_PATH" | grep RHCE
+ls "$IMAGE_PATH" | grep node
 # If image files exist...
 if [ $? == 0 ]; then
 echo "Older disk image files exist, preparing to remove..."
