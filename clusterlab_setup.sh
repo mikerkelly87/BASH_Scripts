@@ -18,11 +18,15 @@ NEW_IMAGE_1=RHCE1.qcow2
 NEW_IMAGE_2=RHCE2.qcow2
 VM1_NAME=node1
 VM2_NAME=node2
+VMSAN_NAME=san
 VM1_DISK=node1.qcow2
 VM2_DISK=node2.qcow2
+VMSAN_DISK=san.qcow2
+VMSAN2_DISK=san2.qcow2
 MEDIA_PATH=/home/mkelly/ISOs/CentOS-7-x86_64-DVD-1611.iso
 KS1_URL=http://192.168.122.1/node1-ks.cfg
 KS2_URL=http://192.168.122.1/node2-ks.cfg
+KS3_URL=http://192.168.122.1/san-ks.cfg
 
 
 echo "Starting Creation of Clustering Lab"
@@ -44,6 +48,7 @@ virsh list --all | grep running
         # Shutdown VMs
         virsh destroy "$VM1_NAME"
         virsh destroy "$VM2_NAME"
+        virsh destroy "$VMSAN_NAME"
         elif [ $? == 1 ]; then
         echo "VMs exist and ARE NOT running"
         echo " "
@@ -53,6 +58,7 @@ echo "Deleting VMs"
 echo " "
 virsh undefine "$VM1_NAME"
 virsh undefine "$VM2_NAME"
+virsh undefine "$VMSAN_NAME"
 
 
 # If VMs don't exist, move along sir
@@ -73,6 +79,7 @@ echo " "
 # Delete the existing disk image files
 rm -f "$IMAGE_PATH""$VM1_DISK"
 rm -f "$IMAGE_PATH""$VM2_DISK"
+rm -f "$IMAGE_PATH""$VMSAN_DISK"
 else
 # If files don't exist, move along sir
 echo "Disk image files don't already exist, will create them..."
@@ -112,5 +119,24 @@ virt-install                                                    \
   --extra-args ks=$KS2_URL
 
 
+# Create SAN VM
+echo "Creating SAN VM"
+echo " "
+virt-install                                                    \
+  --name SAN                                                    \
+  --memory 1024                                                 \
+  --vcpus 1                                                     \
+  --disk path="$IMAGE_PATH""$VMSAN_DISK",format=qcow2,size=10   \
+  --disk path="$IMAGE_PATH""$VMSAN2_DISK",format=qcow2,size=10  \
+  --graphics vnc                                                \
+  --noautoconsole                                               \
+  --location $MEDIA_PATH                                        \
+  --network default                                             \
+  --network default                                             \
+  --extra-args ks=$KS3_URL
+
+
 # Exit script
 echo "You can monitor the installation process by running 'virt-manager'"
+
+# virt-install --name san --memory 1024 --vcpus 1 --disk path=/var/lib/libvirt/images/san.qcow2,format=qcow2,size=10 --disk path=/var/lib/libvirt/images/iSCSI.qcow2,format=qcow2,size=10 --graphics vnc --noautoconsole --location /home/mkelly/ISOs/CentOS-7-x86_64-DVD-1611.iso --network default --network default --extra-args ks=http://192.168.122.1/san-ks.cfg
